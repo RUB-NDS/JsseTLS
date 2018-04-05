@@ -18,11 +18,16 @@ java -jar JsseTlsServer-1.56-1.0.jar [port] [jks] [password] [alias] [BC]
 The last paramater is optional. If it is set, the server uses the Bouncy Castle security provider and inserts it on the first place in the provider list. Otherwise, default Java security providers are used.
 
 ### Examples
+Typical usage examples:
 ```bash
 java -jar JsseTlsServer-1.56-1.0.jar 4433 rsa.jks passwd rsakey BC
 ```
 ```bash
 java -jar JsseTlsServer-1.56-1.0.jar 4433 ec.jks passwd ec
+```
+To use JSSE debugging output, you can start the server as follows:
+```bash
+java -Djavax.net.debug=all -jar JsseTlsServer-1.56-1.0.jar 4433 ec.jks passwd ec
 ```
 
 ### Note
