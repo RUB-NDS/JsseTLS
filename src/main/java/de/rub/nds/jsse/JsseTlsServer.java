@@ -151,6 +151,8 @@ public class JsseTlsServer {
 
         serverSocket = serverSocketFactory.createServerSocket(port);
         serverSocket.setReuseAddress(true);
+        // Enable client authentication
+        ((javax.net.ssl.SSLServerSocket) serverSocket).setNeedClientAuth(true);
         // TODO:
         // if (cipherSuites != null) {
         // ((SSLServerSocket)
