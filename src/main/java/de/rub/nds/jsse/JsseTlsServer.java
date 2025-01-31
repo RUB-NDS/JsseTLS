@@ -26,7 +26,8 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 public class JsseTlsServer {
 
-    private static final Logger LOGGER = LogManager.getLogger(JsseTlsServer.class);
+    private static final Logger LOGGER = LogManager.getLogger();
+        
     private String[] cipherSuites = null;
     private final SSLContext sslContext;
     private ServerSocket serverSocket;
@@ -37,16 +38,11 @@ public class JsseTlsServer {
     private static final String ALIAS = "1";
     private static final int PORT = 4433;
     private final int port;
-
-    /**
-     * Very dirty but ok for testing purposes
-     */
     private volatile boolean initialized;
 
     public JsseTlsServer(KeyStore keyStore, String password, String protocol, int port) throws KeyStoreException,
             IOException, NoSuchAlgorithmException, CertificateException, UnrecoverableKeyException,
             KeyManagementException {
-
         this.port = port;
 
         KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
@@ -125,7 +121,6 @@ public class JsseTlsServer {
                         Thread t = new Thread(ch);
                         t.start();
                     }
-
                 } catch (IOException ex) {
                     LOGGER.debug(ex.getLocalizedMessage(), ex);
                 }
@@ -139,8 +134,8 @@ public class JsseTlsServer {
                     serverSocket.close();
                     serverSocket = null;
                 }
-            } catch (IOException e) {
-                LOGGER.debug(e);
+            } catch (IOException ex) {
+                LOGGER.debug(ex.getLocalizedMessage(), ex);
             }
             LOGGER.info("Shutdown complete");
         }
@@ -148,29 +143,31 @@ public class JsseTlsServer {
 
     private void preSetup() throws SocketException, IOException {
         SSLServerSocketFactory serverSocketFactory = sslContext.getServerSocketFactory();
-
         serverSocket = serverSocketFactory.createServerSocket(port);
         serverSocket.setReuseAddress(true);
+        
         // Enable client authentication
-        ((javax.net.ssl.SSLServerSocket) serverSocket).setNeedClientAuth(true);
+        ((javax.net.ssl.SSLServerSocket) serverSocket).setNeedClientAuth(false);
+        
         // TODO:
         // if (cipherSuites != null) {
         // ((SSLServerSocket)
         // serverSocket).setEnabledCipherSuites(cipherSuites);
         // }
-        LOGGER.debug("Presetup successful");
+        
         initialized = true;
+        LOGGER.debug("Presetup successful");
     }
 
     public void shutdown() {
-        this.shutdown = true;
         LOGGER.debug("Shutdown signal received");
+        this.shutdown = true;
         try {
             if (!serverSocket.isClosed()) {
                 serverSocket.close();
             }
         } catch (IOException ex) {
-            ex.printStackTrace();
+            LOGGER.debug(ex.getLocalizedMessage(), ex);
         }
     }
 
