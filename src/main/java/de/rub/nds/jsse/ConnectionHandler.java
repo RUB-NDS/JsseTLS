@@ -11,41 +11,34 @@ import org.apache.logging.log4j.Logger;
 
 public class ConnectionHandler implements Runnable {
 
-    private final static Logger LOGGER = LogManager.getLogger(ConnectionHandler.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger();
 
     private final Socket applicationSocket;
 
-    /**
-     * ConnectionHandler constructor
-     * 
-     * @param socket
-     *            - The socket of the connection
-     */
-    public ConnectionHandler(final Socket socket) {
+    public ConnectionHandler(Socket socket) {
         applicationSocket = socket;
     }
 
     @Override
     public void run() {
-
-        LOGGER.debug("new Thread started");
-
+        LOGGER.debug("New thread started");
         try {
-            final BufferedReader br = new BufferedReader(new InputStreamReader(applicationSocket.getInputStream()));
-            final BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(applicationSocket.getOutputStream()));
+            BufferedReader br = new BufferedReader(new InputStreamReader(applicationSocket.getInputStream()));
+            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(applicationSocket.getOutputStream()));
             String line = "";
+            
             while ((line = br.readLine()) != null) {
                 LOGGER.debug(line);
                 bw.write("ack");
                 bw.flush();
             }
-        } catch (IOException e) {
-            LOGGER.debug(e.getLocalizedMessage(), e);
+        } catch (IOException ex) {
+            LOGGER.debug(ex.getLocalizedMessage(), ex);
         } finally {
             try {
                 applicationSocket.close();
-            } catch (final IOException ioe) {
-                LOGGER.debug(ioe.getLocalizedMessage(), ioe);
+            } catch (final IOException ex) {
+                LOGGER.debug(ex.getLocalizedMessage(), ex);
             }
         }
     }
